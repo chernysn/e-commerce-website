@@ -1,0 +1,60 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+{% include 'blocks/sales.html' %}
+<div class="central">
+
+    <div class="central-inner" style="margin-bottom: 6em;">
+
+        <h3>You searched for "{{search}}": </h3>
+
+        {% if search_results%}
+
+        <div class="search-output">
+            <table>
+                {% for result in search_results %}
+                <tr>
+                    <td>
+                        <div style="width: 5em; height: 5em; margin: 0 1em; overflow: hidden;"><img
+                                src="{{result.image.url}}" alt="photo" style="width: 100%; height: auto;"></div>
+                    </td>
+
+                    <td>
+                        <strong>{{result.name}}</strong><br>
+                        {{result.description}} <br>
+                    </td>
+                    <td>
+                        <form action="{% url 'add_cart' result.id %}" method="POST" style="margin: 0 2em;">
+                            {% csrf_token %}
+                            <div style="padding: 1em 0;">{{form.quantity}}</a>
+                            </div>
+                            <button type="submit"
+                                style="background-color: #48cae4; color: white; width: 7em; height: 2em; padding: 0 .5em;">Add
+                                to cart</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+
+        {% else %}
+
+        <p style="opacity: .5;"><i>Nothing was found. Try another search...</i></p>
+
+        {% endif %}
+
+    </div>
+
+    <div class="scroll" style="display: flex; flex-direction: row; overflow-x: scroll; padding: 1em 3em; ">
+
+        {% include 'blocks/products.html' %}
+
+    </div>
+</div>
+
+
+
+{% endblock %}

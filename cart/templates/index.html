@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>e-commerce</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-width: 1200px;
+            height: 100vh;
+            font-size: 16px;
+            font-family: Arial, Helvetica, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .header,
+        .footer {
+            background-color: #0077b6;
+            padding: 1.3em 2em;
+            width: 100%;
+            height: 4em;
+            box-sizing: border-box;
+            color: white;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        a:link {
+            text-decoration: none;
+        }
+
+        a:visited {
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        a:active {
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: inherit;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .central {
+            min-height: calc(100vh - 8em);
+        }
+
+        select {
+            background-color: white;
+            border: .5px rgb(220, 220, 220) solid;
+            padding: .2em;
+        }
+
+        .central-inner {
+            width: 50%;
+            margin: 3em auto;
+        }
+
+        button {
+            width: 8em;
+            height: 3em;
+            cursor: pointer;
+            border-radius: 2em;
+            border: none;
+        }
+
+        .scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .right-bar {
+            width: auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+
+        .right-bar-gap {
+            margin: 0 .5em;
+        }
+
+        .search-output {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            height: auto;
+            justify-content: left;
+            align-items: center;
+            margin: 1.5em 0;
+        }
+
+        .sale-bar {
+            background-color: orange;
+            width: 100%;
+            height: 4em;
+            color: white;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .on_sale {
+            width: 4em;
+            padding: .2em;
+            background-color: red;
+            color: white;
+            font-size: .9em;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .discounted_price {
+            margin: 0 .5em;
+            color: red;
+        }
+
+        .cart-num {
+            width: 1.8em;
+            height: 1.8em;
+            border-radius: 1em;
+            color: white;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: .65em;
+        }
+
+        .btn-order {
+            color: white;
+            margin: .5em 1em;
+            cursor: pointer;
+            border: none;
+            font-weight: 400;
+            border-radius: 2em;
+            background-color: #bc3908;
+            width: 8em;
+            height: 3em;
+        }
+
+        .btn-order:hover {
+            background-color: rgb(248, 170, 1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main" style="width: 100%; ">
+
+        <div class="header">
+            <div class="home">
+                <a href="{% url 'index' %}">HOME</a>
+            </div>
+            <div class="right-bar">
+                <span>
+                    <form action="{% url 'search' %}" method="POST" class="right-bar-gap">
+                        {% csrf_token %}
+                        <input type="search" name="search"
+                            style="height: 1.8em; border-radius: 1em; padding: 0 1em; margin: 0 .5em;"
+                            placeholder="Search" required>
+                        <button type="submit"
+                            style="width: 5em; height: 1.8em; border-radius: 1em; background-color: #48cae4; color: white; ">Search</button>
+                    </form>
+                </span>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="right-bar-gap">Login </a>
+                <a href="{% url 'register' %}" class="right-bar-gap">Register</a>
+                <span style="display: flex; flex-direction: row;"><a href="{% url 'cart' %}"
+                        class="right-bar-gap">Cart</a>
+                    <div class="cart-num">0</div>
+                </span>
+                {% else %}
+                <span class="right-bar-gap">Hello, {{user.username}}! </span>
+                <a href="{% url 'logout' %}" class="right-bar-gap">Logout </a>
+                <span style="display: flex; flex-direction: row;"><a href="{% url 'cart' %}"
+                        class="right-bar-gap">Cart</a>
+                    <div class="cart-num">{{num_items_cart}}</div>
+                </span>
+
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    {% block body %}
+
+    {% include 'blocks/sales.html' %}
+
+    {% include 'blocks/products.html' %}
+
+    </div>
+
+    {% endblock body %}
+
+    <div class="header">
+        FOOTER <br><a href="https://icons8.com/icon/fQDK2sCN4Eh1/google">Google</a> icon by <a
+            href="https://icons8.com">Icons8</a>
+    </div>
+
+    </div>
+</body>
+
+</html>
