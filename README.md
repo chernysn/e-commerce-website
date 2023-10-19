@@ -1,4 +1,3 @@
 # e_commerce
 ghhsgkfdhglklkhdslglh
-hdafjdhaldhfalkdshf
-jasfjkahskfjlsajdhflkjsahf
+hdafjdhaldhfalkdshfkahskfjlsajdhflkjsahf
