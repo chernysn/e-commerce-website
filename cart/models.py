@@ -9,11 +9,11 @@ class Category(models.Model):
     name = models.CharField(max_length=500, null=False)
     category_objects = models.Manager()
 
-
 class Product(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True)
     name = models.CharField(max_length=500, null=False)
     description = models.CharField(max_length=500, null=False)
+    calc_clicks = models.IntegerField(default='0')
     category_id = models.ManyToManyField(Category, related_name='categories')
     price = models.DecimalField(max_digits=100, decimal_places=2, null=False)
     on_sale = models.IntegerField(default=0,

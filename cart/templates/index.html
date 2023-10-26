@@ -45,7 +45,7 @@
             width: 20%;
             display: flex;
             flex-direction: row;
-            justify-content: space-evenly;
+            justify-content: space-between;
         }
 
 
@@ -221,17 +221,20 @@
         }
 
         .cat-heading {
-            width: 10em;
+            width: 8em;
             height: 2em;
             cursor: pointer;
+            text-align: center;
         }
 
         .cat-options {
             display: none;
-            width: 10em;
+            width: 8em;
             height: auto;
+            margin: .5em 0 0 0;
             z-index: 2;
-            box-shadow: 5px 5px 10px 1px rgba(91, 91, 91, 0.2);
+            box-shadow: 5px 10px 10px 5px rgba(91, 91, 91, 0.2);
+
         }
 
         .cat-options option {
@@ -268,7 +271,9 @@
                         {% endfor %}
                     </div>
                 </div>
+                <div> <a href="statistics">#Trends </a></div>
             </div>
+
             <div class="right-bar">
                 <span>
                     <form action="{% url 'search' %}" method="POST" class="right-bar-gap">

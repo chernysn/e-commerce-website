@@ -1,3 +1,3 @@
 # e_commerce
-ghhsgkfdhglklkhdslglh
-hdafjdhaldhfalkdshfkahskfjlsajdhflkjsahf
+
+TBA: will be added before the deadline for the portfolio project submission

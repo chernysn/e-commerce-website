@@ -9,7 +9,6 @@ from django.contrib.auth.models import User, AnonymousUser
 from PIL import Image
 from django.http import HttpResponseRedirect
 
-
 def index(request):
     all_products = Product.product_objects.all()
     all_categories = Category.category_objects.all()
@@ -26,29 +25,6 @@ def index(request):
     return render(request, 'index.html', {'form': form, 'all_products': all_products, 'num_items_cart': num_items_cart, 'all_categories': all_categories})
 
 
-def product_details(request, pr_id):
-    all_categories = Category.category_objects.all()
-    this_product = Product.product_objects.get(id=pr_id)
-    all_products = Product.product_objects.all()
-    form = AddCartForm(request.POST)
-
-    if this_product.on_sale > 0:
-        my_discount = this_product.price - \
-            (this_product.price * this_product.on_sale / 100)
-    else:
-        my_discount = 0
-
-    num_items_cart = 0
-
-    user = request.user
-    my_cart = AddCart.cart_objects.all().order_by('-id')
-    my_cart = my_cart.filter(client=user)
-    for item in my_cart:
-        num_items_cart += item.quantity
-
-    return render(request, 'product_details.html', {'all_categories': all_categories,  'this_product': this_product, 'all_products': all_products, 'form': form, 'num_items_cart': num_items_cart, 'my_discount': my_discount, })
-
-
 def add_cart(request, pr_id):
     this_product = Product.product_objects.get(id=pr_id)
     if request.method == "POST":
@@ -62,10 +38,16 @@ def add_cart(request, pr_id):
                     x = f.quantity
                     item.add_quantity(x)
                     item.save()
+                    this_product.calc_clicks = this_product.calc_clicks + 1
+                    this_product.save() 
+                    print(this_product.name, this_product.calc_clicks)
                     return redirect('cart')
             f.product_id = this_product
             f.client = client
             f.save()
+            this_product.calc_clicks = 1
+            this_product.save()
+            print(this_product.name, this_product.calc_clicks)
             return redirect('cart')
 
     return render(request, 'index.html', {'form': form, 'this_product': this_product, })
@@ -129,17 +111,27 @@ def delete_item(request, item_id):
     return render(request, 'cart.html', {'this_item': this_item})
 
 
+def product_details(request, pr_id):
+    all_categories = Category.category_objects.all()
+    this_product = Product.product_objects.get(id=pr_id)
+    all_products = Product.product_objects.all()
+    form = AddCartForm(request.POST)
 
+    if this_product.on_sale > 0:
+        my_discount = this_product.price - \
+            (this_product.price * this_product.on_sale / 100)
+    else:
+        my_discount = 0
 
+    num_items_cart = 0
 
+    user = request.user
+    my_cart = AddCart.cart_objects.all().order_by('-id')
+    my_cart = my_cart.filter(client=user)
+    for item in my_cart:
+        num_items_cart += item.quantity
 
-
-
-
-
-
-
-
+    return render(request, 'product_details.html', {'all_categories': all_categories,  'this_product': this_product, 'all_products': all_products, 'form': form, 'num_items_cart': num_items_cart, 'my_discount': my_discount, })
 
 
 def search(request):
@@ -167,9 +159,6 @@ def search(request):
         pass
 
     return render(request, 'search_results.html', {'all_categories': all_categories, 'search': search, 'form_add': form_add, 'search_results': search_results, 'num_items_cart': num_items_cart, 'all_products': all_products})
-
-
-
 
 
 def category(request, cat_id):
@@ -221,3 +210,8 @@ def delete_products(request, pr_id):
     return redirect('index')
 
     return render(request, 'index.html', {'this_product': this_product})
+
+def statistics(request):
+    all_products = Product.product_objects.all()
+
+    return render(request, 'stats.html', {'all_products': all_products, })

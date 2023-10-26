@@ -1,0 +1,51 @@
+{% extends 'index.html' %}
+{% load custom_tags %}
+
+{% block body %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+
+
+
+<div class="central"
+    style="display: flex; flex-direction: row; justify-content: space-around; width: 90%; margin: 0 auto; padding: 0 3em;">
+
+    <div style="margin: 0; padding: 3em; width: 50%;">
+
+        <canvas id="chart" width="300" height="300">
+
+            <script>
+
+            let ctx = document.getElementById("chart").getContext("2d");
+
+            let chart = new Chart(ctx, {
+              type: "bar",
+              data: {
+                 labels: [
+                 {% for item in all_products %} "{{item.name|safe}}", {% endfor %} ],
+                 datasets: [
+                    {
+                      label: "Product popularity",
+                      backgroundColor: ["#ae2012", "#ffc300", "#00a6fb", "#b298dc", "#f18701", "#3f37c9", "#80b918"], 
+                      data: [ {% for item in all_products %} "{{item|count_stats:item.products.all}}", {% endfor %}]
+                    }
+                 ]
+              },
+              options: {
+                 title: {
+                    text: "",
+                    display: true
+                 }
+              }
+            });
+        </script>
+        </canvas>
+
+
+    </div>
+
+
+</div>
+
+
+
+{% endblock %}
