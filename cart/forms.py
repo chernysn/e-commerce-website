@@ -1,18 +1,33 @@
 from django.db import models
 from django.forms import ModelForm
 from django import forms
-from .models import Product, AddCart, Order
+from .models import Product, AddCart, Category, CategoryProduct
+
+cat_choices = Category.category_objects.all()
+
+class CategoryForm(ModelForm):
+    class Meta:
+        model = Category
+
+        fields = ['name',]
+        labels = {
+        }
+
+        widgets = {
+            'category': forms.Select(choices=cat_choices, attrs={'class': 'form-control form-control-sm', }),
+        }
 
 
 class ProductForm(ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'image', 'price']
+        fields = ['name', 'description',
+                  'price', 'on_sale', 'image', ]
         labels = {
-
         }
 
         widgets = {
+            'on_sale': forms.Select(attrs={'class': 'form-control form-control-sm', }),
         }
 
 
@@ -33,13 +48,3 @@ class AddCartForm(ModelForm):
         }
 
 
-class OrderForm(ModelForm):
-    class Meta:
-        model = Order
-        fields = []
-        labels = {
-
-        }
-
-        widgets = {
-        }

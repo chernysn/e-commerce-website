@@ -1,0 +1,45 @@
+{% extends 'index.html' %}
+{%load crispy_forms_tags %}
+
+{% block body %}
+
+<div class="central">
+    <div class="central-inner">
+        <div class="product_details_card">
+            <div style="overflow: hidden; width: 20em; height: 20em;">
+                <img src="{{this_product.image.url}}" alt="" style="width: 100%; height: auto;">
+            </div>
+            <div class="product_details_card_body">
+                <div>
+                    <p><strong>{{this_product.name}}</strong></p>
+                    <p>{{this_product.description}}</p>
+                    <p>$ {{this_product.price}}</p>
+                    {% if this_product.on_sale > 0 %}
+                    <span class="on_sale"> &#8211;{{this_product.on_sale}}% </span> <span
+                            style="color: red; margin: 0 0 0 1em;">
+                            <strong>$ {{my_discount|floatformat:2}}</strong></span>
+                        {% endif %}
+                </div>
+                <div>
+                    <form action="{% url 'add_cart' this_product.id %}" method="POST">
+                        {% csrf_token %}
+                        <div style="padding: 2em 0;">{{form.quantity}}</a>
+                        </div>
+                        <button type="submit" style="background-color: #48cae4; color: white; ">Add
+                            to cart</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div>
+        <div class="scroll" style="display: flex; flex-direction: row; overflow-x: scroll; padding: 1em 3em;">
+
+            {% include 'blocks/products.html' %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

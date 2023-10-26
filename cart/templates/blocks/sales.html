@@ -1,6 +1,12 @@
-<div class="sale-bar">
+<div class="sale-bar" style="position: relative;">
 
-    <div style="margin: 0 1em;">
+    <div style="margin: 0 1em; ">
         <h4>Sale 70% with the promo code: YOURLUCKYDAY2023!</h4>
     </div>
+
+    <div style="position: absolute; right: 2em;">{% if user.is_superuser %}
+        <a href="{% url 'update_sales' % }"> Edit</a>
+        {% endif %}
+    </div>
+</div>
 </div>

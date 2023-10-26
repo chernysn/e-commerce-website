@@ -5,34 +5,46 @@
 {% include 'blocks/sales.html' %}
 <div class="central">
 
-    <div class="central-inner" style="margin-bottom: 6em;">
+    <div class="central-inner" style="margin-bottom: 6em; ">
 
         <h3>You searched for "{{search}}": </h3>
 
-        {% if search_results%}
+        {% if search_results %}
 
         <div class="search-output">
-            <table>
+            <table style="width: 100%">
                 {% for result in search_results %}
                 <tr>
-                    <td>
-                        <div style="width: 5em; height: 5em; margin: 0 1em; overflow: hidden;"><img
+                    <td style="width: 20%;">
+                        <div style="width: 6em; height: 6em; margin: .5em 1em; overflow: hidden;"><img
                                 src="{{result.image.url}}" alt="photo" style="width: 100%; height: auto;"></div>
                     </td>
 
-                    <td>
+                    <td style="width: 40%;">
                         <strong>{{result.name}}</strong><br>
                         {{result.description}} <br>
+                        <span><strong>$ {{result.price}}</strong></span>
+                        {% if result.on_sale %}
+                        <span class="on_sale"> Sale! </span>
+                        {% endif %}
                     </td>
-                    <td>
-                        <form action="{% url 'add_cart' result.id %}" method="POST" style="margin: 0 2em;">
+                    <td style="width: 40%;">
+
+                        <a href="{% url 'product_details' result.id %}">
+                            <button
+                                style="color: #ffb703; border: 2px solid #ffb703; background-color: white; margin: 0 0 0 2em;">
+                                Read more</button>
+                        </a>
+
+                        <!--                        <form action="{% url 'add_cart' result.id %}" method="POST" style="margin: 0 2em;">
                             {% csrf_token %}
-                            <div style="padding: 1em 0;">{{form.quantity}}</a>
+                            <div style="padding: 1em 0;">{{form_add.quantity}}</a>
                             </div>
                             <button type="submit"
                                 style="background-color: #48cae4; color: white; width: 7em; height: 2em; padding: 0 .5em;">Add
                                 to cart</button>
                         </form>
+-->
                     </td>
                 </tr>
                 {% endfor %}
@@ -48,11 +60,16 @@
 
     </div>
 
-    <div class="scroll" style="display: flex; flex-direction: row; overflow-x: scroll; padding: 1em 3em; ">
 
-        {% include 'blocks/products.html' %}
+    <div style="margin: 8em 1em 1em 3em; ">
+        <p> <strong>You might also be interested in ... </strong></p>
+        <div class="scroll" style="display: flex; flex-direction: row; overflow-x: scroll; padding: 0; ">
 
+            {% include 'blocks/products.html' %}
+
+        </div>
     </div>
+
 </div>
 
 

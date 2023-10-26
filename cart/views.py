@@ -2,84 +2,98 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from users.forms import RegistrationForm
-from .forms import ProductForm, AddCartForm, OrderForm
-from .models import Product, AddCart, Order
+from .forms import ProductForm, AddCartForm, CategoryForm
+from .models import Product, AddCart, Category, CategoryProduct
 from django.db.models import Count, Sum, Q
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from PIL import Image
+from django.http import HttpResponseRedirect
 
 
 def index(request):
     all_products = Product.product_objects.all()
+    all_categories = Category.category_objects.all()
     form = AddCartForm(request.POST)
 
     num_items_cart = 0
 
-    try:
-        user = request.user
-        my_cart = AddCart.cart_objects.all().order_by('-id')
-        my_cart = my_cart.filter(client=user)
-        for item in my_cart:
-            num_items_cart += item.quantity
-    except:
-        pass
+    user = request.user
+    my_cart = AddCart.cart_objects.all().order_by('-id')
+    my_cart = my_cart.filter(client=user)
+    for item in my_cart:
+        num_items_cart += item.quantity
 
-    return render(request, 'index.html', {'form': form, 'all_products': all_products, 'num_items_cart': num_items_cart})
+    return render(request, 'index.html', {'form': form, 'all_products': all_products, 'num_items_cart': num_items_cart, 'all_categories': all_categories})
+
+
+def product_details(request, pr_id):
+    all_categories = Category.category_objects.all()
+    this_product = Product.product_objects.get(id=pr_id)
+    all_products = Product.product_objects.all()
+    form = AddCartForm(request.POST)
+
+    if this_product.on_sale > 0:
+        my_discount = this_product.price - \
+            (this_product.price * this_product.on_sale / 100)
+    else:
+        my_discount = 0
+
+    num_items_cart = 0
+
+    user = request.user
+    my_cart = AddCart.cart_objects.all().order_by('-id')
+    my_cart = my_cart.filter(client=user)
+    for item in my_cart:
+        num_items_cart += item.quantity
+
+    return render(request, 'product_details.html', {'all_categories': all_categories,  'this_product': this_product, 'all_products': all_products, 'form': form, 'num_items_cart': num_items_cart, 'my_discount': my_discount, })
 
 
 def add_cart(request, pr_id):
-
-    try:
-        this_product = Product.product_objects.get(id=pr_id)
-        all_in_cart = AddCart.cart_objects.filter(client=request.user)
+    this_product = Product.product_objects.get(id=pr_id)
+    if request.method == "POST":
+        client = request.user
+        all_in_cart = AddCart.cart_objects.filter(client=client)
         form = AddCartForm(request.POST)
-        if request.method == "POST":
-            if form.is_valid():
-                f = form.save(commit=False)
-                for item in all_in_cart:
-                    if item.product_id.id == this_product.id:
-                        item_in_cart = AddCart.cart_objects.get(
-                            product_id=this_product.id)
-                        x = f.quantity
-                        item_in_cart.add_quantity(x)
-                        item_in_cart.save()
-                        return redirect('cart')
-                f.product_id = this_product
-                f.client = request.user
-                f.save()
-                return redirect('index')
-
-            else:
-                form = AddCartForm()
-    except:
-        return redirect('cart')
+        if form.is_valid():
+            f = form.save(commit=False)
+            for item in all_in_cart:
+                if item.product_id.id == this_product.id:
+                    x = f.quantity
+                    item.add_quantity(x)
+                    item.save()
+                    return redirect('cart')
+            f.product_id = this_product
+            f.client = client
+            f.save()
+            return redirect('cart')
 
     return render(request, 'index.html', {'form': form, 'this_product': this_product, })
 
 
 def cart(request):
+    all_categories = Category.category_objects.all()
 
     num_items_cart = 0
-    total_to_pay = 0.0
+    total_to_pay = 0
 
-    try:
-        my_cart = AddCart.cart_objects.all().order_by('-id')
-        my_cart = my_cart.filter(client=request.user)
-        for item in my_cart:
-            num_items_cart += item.quantity
+    my_cart = AddCart.cart_objects.all().order_by('-id')
 
-        for item in my_cart:
-            if item.product_id.on_sale > 0:
-                total_per_item = item.discounted_price()
-                total_to_pay += total_per_item
-            else:
-                total_per_item = item.total_price_per_item()
-                total_to_pay += total_per_item
+    client = request.user
+    my_cart = my_cart.filter(client=client)
 
-    except:
-        pass
+    for item in my_cart:
+        num_items_cart += item.quantity
 
-    return render(request, 'cart.html', {'my_cart': my_cart, 'total_to_pay': total_to_pay, 'num_items_cart': num_items_cart})
+    for item in my_cart:
+        if item.product_id.on_sale > 0:
+            total_per_item = item.discounted_price()
+            total_to_pay = total_to_pay + total_per_item
+        else:
+            total_per_item = item.total_price_per_item()
+            total_to_pay = total_to_pay + total_per_item
+
+    return render(request, 'cart.html', {'all_categories': all_categories,  'my_cart': my_cart, 'total_to_pay': total_to_pay, 'num_items_cart': num_items_cart})
 
 
 def add_quantity(request, item_id):
@@ -115,21 +129,27 @@ def delete_item(request, item_id):
     return render(request, 'cart.html', {'this_item': this_item})
 
 
-def search(request):
 
+
+
+
+
+
+
+
+
+
+
+
+
+def search(request):
+    all_categories = Category.category_objects.all()
     num_items_cart = 0
     my_cart = []
-    form = AddCartForm(request.POST)
+    form_add = AddCartForm()
+    all_products = Product.product_objects.all()
 
     try:
-        form = AddCartForm(request.POST)
-        all_products = Product.product_objects.all()
-
-        if request.method == "POST":
-            search = request.POST['search'].lower()
-            search_results = Product.product_objects.filter(
-                Q(name__icontains=search) | Q(description__icontains=search))
-
         my_cart = AddCart.cart_objects.all().order_by('-id')
         my_cart = my_cart.filter(client=request.user)
         for item in my_cart:
@@ -138,5 +158,66 @@ def search(request):
     except:
         pass
 
-    return render(request, 'search_results.html', {'search': search, 'form': form,
-                                                   'search_results': search_results, 'num_items_cart': num_items_cart, 'all_products': all_products})
+    if request.method == "POST":
+        search = request.POST['search'].lower()
+        search_results = Product.product_objects.filter(
+            Q(name__icontains=search) | Q(description__icontains=search))
+
+    else:
+        pass
+
+    return render(request, 'search_results.html', {'all_categories': all_categories, 'search': search, 'form_add': form_add, 'search_results': search_results, 'num_items_cart': num_items_cart, 'all_products': all_products})
+
+
+
+
+
+def category(request, cat_id):
+    all_products = Product.product_objects.all()
+    all_categories = Category.category_objects.all()
+    this_category = Category.category_objects.get(id=cat_id)
+    cat_products = Product.product_objects.filter(category_id=cat_id)
+    form = AddCartForm(request.POST)
+
+    num_items_cart = 0
+
+    user = request.user
+    my_cart = AddCart.cart_objects.all().order_by('-id')
+    my_cart = my_cart.filter(client=user)
+    for item in my_cart:
+        num_items_cart += item.quantity
+
+    return render(request, 'category.html', {'cat_products': cat_products, 'this_category': this_category, 'form': form, 'all_products': all_products, 'num_items_cart': num_items_cart, 'all_categories': all_categories})
+
+
+
+def upload_products(request):
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    else:
+        form = ProductForm()
+
+    return render(request, 'upload_products.html', {'form': form, })
+
+
+def update_products(request, pr_id):
+    this_product = Product.product_objects.get(id=pr_id)
+    form = ProductForm(request.POST, request.FILES, instance=this_product)
+    if form.is_valid():
+        form.save()
+        return redirect('index')
+    else:
+        form = ProductForm(instance=this_product,)
+
+    return render(request, 'update_products.html', {'form': form,  'this_product': this_product})
+
+
+def delete_products(request, pr_id):
+    this_product = Product.product_objects.get(id=pr_id)
+    this_product.delete()
+    return redirect('index')
+
+    return render(request, 'index.html', {'this_product': this_product})

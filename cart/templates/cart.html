@@ -1,88 +1,10 @@
 {% extends 'index.html' %}
-<!--  <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-commerce</title>
-
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100vh;
-            font-size: 16px;
-            font-family: Arial, Helvetica, sans-serif;
-            box-sizing: border-box;
-        }
-
-        .header,
-        .footer {
-            background-color: #8f2d09;
-            padding: 1.3em 2em;
-            width: 100%;
-            height: 4em;
-            box-sizing: border-box;
-            color: white;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
-
-        .main {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .central {
-            min-height: calc(100vh - 8em)
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        a:visited {
-            color: inherit;
-        }
-    </style>
-
-</head>
-
-<body>
-
-    <div class="main">
-        <div class="header">
-            <a href="{% url 'index' %}">HOME</a> <a href="{% url 'cart' %}">CART </a>
-        </div>
-
-        ........
-
-                <div class="footer">
-                    FOOTER
-                </div>
-                </div>
-                </body>
-                
-                </html>
--->
-
-
-
 
 {% block body %}
 
 <div class="central"
     style="display: flex; flex-direction: row; justify-content: space-around; width: 90%; margin: 0 auto; padding: 0 3em;">
-    {% if not user.is_authenticated %}
-    <div>
-        <h5>Login to view your cart <a href="login" style="color:#bc3908">here <img width="96" height="96"
-                    src="https://img.icons8.com/android/96/000000/right3.png" alt="right3" /></a> </h5>
-    </div>
-    {% else %}
+
     <div style="margin: 0; width: 70%;">
         <table
             style="width: 100%; margin: 1em 0 2em 0; font-size: 0.85em; border-collapse:separate; border-spacing: 1em; ">
@@ -122,8 +44,8 @@
                     <div style="padding: .5em; ">
                         <strong>Cost: </strong>
                         $ {{item.total_price_per_item|floatformat:2}}<br>
-                        {% if item.product_id.on_sale > 0 %} <span class="on_sale"> -
-                            $ {{item.discount|floatformat:2}}
+                        {% if item.product_id.on_sale > 0 %} <span class="on_sale"> &#8211;
+                            {{item.product_id.on_sale}}%
                         </span> <span class="discounted_price">$ {{item.discounted_price|floatformat:2}} </span>
                         {% endif %}
                     </div>
@@ -161,12 +83,12 @@
             <div style="margin: .5em 1em; font-size: 1.5em; font-weight: 500;">
                 ${{total_to_pay|floatformat:2}}</div>
 
-            <button class="btn-order">
-                Order
-            </button>
+            <a href=""><button class="btn-order">
+                    Order
+                </button></a>
         </div>
     </div>
-    {% endif %}
+
 </div>
 
 

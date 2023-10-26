@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+{%load crispy_forms_tags %}
+
+{% block body %}
+
+<div class="central">
+    <div class="central-inner">
+
+        <form action="" method="POST" enctype="multipart/form-data"">
+            {% csrf_token %}
+            {{form|crispy}}
+
+            <button type=" submit" style="background-color: #ffb703; margin: 2em 0 4em 0;">Submit</button>
+            <a href="{% url 'delete_products' this_product.id %}" style="color: rgb(123, 56, 100); margin: 0 0 0 1em;">
+                Delete </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
