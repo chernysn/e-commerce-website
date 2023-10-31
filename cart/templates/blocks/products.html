@@ -24,16 +24,13 @@
 
         <form action="{% url 'add_cart' product.id %}" method="POST">
             {% csrf_token %}
-            <div style="padding: 1em 0;">{{form.quantity}} </div>
-            <input type="hidden" name="next" value="{{ request.path }}">
+            <div class="addcart" style="padding: 1em 0;">{{form.quantity}} </div>
             <button type="submit" style="background-color: #48cae4; color: white; ">Add
                 to cart</button>
 
             {% if user.is_superuser %}
-
             <a href="{% url 'update_products' product.id %}" style="color: rgb(140, 140, 185); margin: 0 0 0 1em; ">
                 Edit </a> <br>
-
             {% endif %}
         </form>
 

@@ -48,8 +48,8 @@
             justify-content: space-between;
         }
 
-
-        .header a, .footer a {
+        .header a,
+        .footer a {
             text-decoration: none;
             color: white;
         }
@@ -77,12 +77,6 @@
 
         .central {
             min-height: calc(100vh - 8em);
-        }
-
-        select {
-            background-color: white;
-            border: .5px rgb(220, 220, 220) solid;
-            padding: .2em;
         }
 
         .central-inner {
@@ -280,7 +274,7 @@
                         {% csrf_token %}
                         <input type="search" name="search"
                             style="height: 1.8em; border-radius: 1em; padding: 0 1em; margin: 0 .5em;"
-                            placeholder="Search" required>
+                            placeholder="Search" required autocomplete="off">
                         <button type="submit"
                             style="width: 5em; height: 1.8em; border-radius: 1em; background-color: #48cae4; color: white; ">Search</button>
                     </form>
@@ -346,5 +340,3 @@
 </body>
 
 </html>
-
-

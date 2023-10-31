@@ -1,9 +1,0 @@
-version: "3.8"
-services:
-  web:
-    build: ./cart
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./cart/:/usr/src/cart/
-    ports:
-      - 8000:8000

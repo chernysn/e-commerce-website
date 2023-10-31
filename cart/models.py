@@ -4,10 +4,12 @@ from django.urls import reverse
 from django.db.models import Count, Sum
 from PIL import Image
 
+
 class Category(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True)
     name = models.CharField(max_length=500, null=False)
     category_objects = models.Manager()
+
 
 class Product(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True)
@@ -37,7 +39,6 @@ class Product(models.Model):
             bottom = height
             img = img.crop((left, top, right, bottom))
             img.save(self.image)
-
 
     def __str__(self):
         return f'{self.name}'
@@ -75,8 +76,6 @@ class AddCart(models.Model):
 
     def deduct_quantity(self):
         return self.quantity - 1
-        
+
     def __str__(self):
         return f'{self.product_id.name} - {self.client}'
-
-

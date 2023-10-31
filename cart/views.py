@@ -24,6 +24,49 @@ def index(request):
 
     return render(request, 'index.html', {'form': form, 'all_products': all_products, 'num_items_cart': num_items_cart, 'all_categories': all_categories})
 
+def category(request, cat_id):
+    this_category = Category.category_objects.get(id=cat_id)
+    cat_products = Product.product_objects.filter(category_id=cat_id)
+    all_products = Product.product_objects.all()
+    all_categories = Category.category_objects.all()
+    form = AddCartForm(request.POST)
+
+    num_items_cart = 0
+
+    user = request.user
+    my_cart = AddCart.cart_objects.all().order_by('-id')
+    my_cart = my_cart.filter(client=user)
+    for item in my_cart:
+        num_items_cart += item.quantity
+
+    return render(request, 'category.html', {'cat_products': cat_products, 'this_category': this_category, 'form': form, 'all_products': all_products, 'num_items_cart': num_items_cart, 'all_categories': all_categories})
+
+def search(request):
+    all_categories = Category.category_objects.all()
+    num_items_cart = 0
+    my_cart = []
+    form_add = AddCartForm()
+    all_products = Product.product_objects.all()
+
+    try:
+        my_cart = AddCart.cart_objects.all().order_by('-id')
+        my_cart = my_cart.filter(client=request.user)
+        for item in my_cart:
+            num_items_cart += item.quantity
+
+    except:
+        pass
+
+    if request.method == "POST":
+        search = request.POST['search'].lower()
+        search_results = Product.product_objects.filter(
+            Q(name__icontains=search) | Q(description__icontains=search))
+
+    else:
+        pass
+
+    return render(request, 'search_results.html', {'all_categories': all_categories, 'search': search, 'form_add': form_add, 'search_results': search_results, 'num_items_cart': num_items_cart, 'all_products': all_products})
+
 
 def add_cart(request, pr_id):
     this_product = Product.product_objects.get(id=pr_id)
@@ -132,52 +175,6 @@ def product_details(request, pr_id):
         num_items_cart += item.quantity
 
     return render(request, 'product_details.html', {'all_categories': all_categories,  'this_product': this_product, 'all_products': all_products, 'form': form, 'num_items_cart': num_items_cart, 'my_discount': my_discount, })
-
-
-def search(request):
-    all_categories = Category.category_objects.all()
-    num_items_cart = 0
-    my_cart = []
-    form_add = AddCartForm()
-    all_products = Product.product_objects.all()
-
-    try:
-        my_cart = AddCart.cart_objects.all().order_by('-id')
-        my_cart = my_cart.filter(client=request.user)
-        for item in my_cart:
-            num_items_cart += item.quantity
-
-    except:
-        pass
-
-    if request.method == "POST":
-        search = request.POST['search'].lower()
-        search_results = Product.product_objects.filter(
-            Q(name__icontains=search) | Q(description__icontains=search))
-
-    else:
-        pass
-
-    return render(request, 'search_results.html', {'all_categories': all_categories, 'search': search, 'form_add': form_add, 'search_results': search_results, 'num_items_cart': num_items_cart, 'all_products': all_products})
-
-
-def category(request, cat_id):
-    all_products = Product.product_objects.all()
-    all_categories = Category.category_objects.all()
-    this_category = Category.category_objects.get(id=cat_id)
-    cat_products = Product.product_objects.filter(category_id=cat_id)
-    form = AddCartForm(request.POST)
-
-    num_items_cart = 0
-
-    user = request.user
-    my_cart = AddCart.cart_objects.all().order_by('-id')
-    my_cart = my_cart.filter(client=user)
-    for item in my_cart:
-        num_items_cart += item.quantity
-
-    return render(request, 'category.html', {'cat_products': cat_products, 'this_category': this_category, 'form': form, 'all_products': all_products, 'num_items_cart': num_items_cart, 'all_categories': all_categories})
-
 
 
 def upload_products(request):

@@ -5,6 +5,7 @@ from .models import Product, AddCart, Category, CategoryProduct
 
 cat_choices = Category.category_objects.all()
 
+
 class CategoryForm(ModelForm):
     class Meta:
         model = Category
@@ -46,5 +47,3 @@ class AddCartForm(ModelForm):
         widgets = {
             "quantity": forms.Select(choices=choices, attrs={'class': 'form-control form-control-sm', }),
         }
-
-
